@@ -51,7 +51,9 @@ var SlotStore = Fluxxor.createStore({
 
     if(!current || current.id !== res.slot.id) {
       console.log('adding slot ' + res.slot.id + ' to the queue.');
+      
       this.slots.unshift(res.slot);
+      this.emit('change');
     } else {
       console.log('using slot id: ' + current.id);
     }
@@ -74,16 +76,55 @@ var flux = new Fluxxor.Flux({
 
 window.flux = flux;
 
-/**
- * Main component and entry.
- */
 var FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
+/**
+ */
+var CountdownTimer = React.createClass({
+  mixins: [FluxMixin, StoreWatchMixin('SlotStore')],
+
+  getStateFromFlux : function () {
+    var remaining = 0, slotStore = this.getFlux().store('SlotStore');
+
+    if(slotStore.slots.length !== 0) {
+      remaining = slotStore.slots[0].endsAt - (Date.now() / 1000);
+    }
+
+    return {
+      secondsRemaining : remaining
+    };
+  },
+
+  tick: function() {   
+    setTimeout(function () {
+      if(this.state.secondsRemaining > 0) {
+        this.setState({secondsRemaining: this.state.secondsRemaining - 1});
+      } else {
+        console.log('waiting for the next game.');
+      }
+      this.tick();
+    }.bind(this), 1000);
+  },
+
+  componentDidMount: function() {
+    this.tick();
+  },
+
+  render: function() {
+    return (
+      <div>Seconds Remaining: {this.state.secondsRemaining}</div>
+    );
+  }
+});
+
+/**
+ * Main component and entry.
+ */
 var Bingo = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('SlotStore')],
 
-  getStateFromFlux : function() {
+  getStateFromFlux : function () {
     var slotStore = this.getFlux().store('SlotStore');
     
     return {
@@ -91,9 +132,13 @@ var Bingo = React.createClass({
     };
   },
 
+  getSecondsRemaining : function () {
+
+  },
+
   render : function() {
     return (
-      <div></div>
+      <div><CountdownTimer /></div>
     );
   },
 

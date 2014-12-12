@@ -8,9 +8,9 @@ total = 86400 / duration;
 for(i = 0; i < total; i++) {	
 	slots.push({
 		id : i,
-		duration : duration,
-		startsAt : today + (duration * i),
-		endsAt   : today + (duration * i) + duration,
+		duration  : duration,
+		startsAt  : today + (duration * i),
+		endsAt    : today + (duration * i) + duration,
 		game : {
 			id : i,
 			balls : []

@@ -17,6 +17,7 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "jsx-loader": "^0.12.2"
+    "jsx-loader": "^0.12.2",
+    "webpack": "^1.4.13"
   }
 }
